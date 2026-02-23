@@ -14,7 +14,7 @@ BASE_URL = "https://api.stlouisfed.org/fred/series/observations"
 def request_with_backoff(
     params: Dict[str, str],
     retries: int = 5,
-    backoff_base_seconds: float = 1.0,
+    backoff_base_seconds: float = 0.75,
     timeout_seconds: int = 30,
 ) -> Dict:
     last_error: Optional[Exception] = None
@@ -35,8 +35,8 @@ def request_with_backoff(
             if attempt >= retries:
                 break
 
-            sleep_seconds = min(backoff_base_seconds * (2 ** attempt), 30)
-            jitter = random.uniform(0.0, 0.20 * sleep_seconds)
+            sleep_seconds = min(backoff_base_seconds * (1.75 ** attempt), 25)
+            jitter = random.uniform(0.05, 0.30 * sleep_seconds)
             time.sleep(sleep_seconds + jitter)
 
     raise RuntimeError(f"Request failed after {retries} retries: {last_error}") from last_error
