@@ -35,8 +35,8 @@ def request_with_backoff(
             if attempt >= retries:
                 break
 
-            sleep_seconds = backoff_base_seconds * (2 ** attempt)
-            jitter = random.uniform(0.0, 0.25 * sleep_seconds)
+            sleep_seconds = min(backoff_base_seconds * (1.5 ** attempt), 30)
+            jitter = random.uniform(0.0, 0.35 * sleep_seconds)
             time.sleep(sleep_seconds + jitter)
 
     raise RuntimeError(f"Request failed after {retries} retries: {last_error}") from last_error
