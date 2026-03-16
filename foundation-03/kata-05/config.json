@@ -1,0 +1,12 @@
+{
+  "thread_pool_size": 4,
+  "timeout_seconds": 5,
+  "urls": [
+    "https://jsonplaceholder.typicode.com/posts/1",
+    "https://jsonplaceholder.typicode.com/posts/2",
+    "https://jsonplaceholder.typicode.com/posts/3",
+    "https://jsonplaceholder.typicode.com/posts/4"
+  ],
+  "output_file": "results.json",
+  "error_log_file": "errors.log"
+}
