@@ -1,0 +1,7 @@
+.vscode/
+__pycache__/
+*.pyc
+errors.log
+results.json
+
+# Keep generated sample outputs under data/ and output/ tracked for assignment evidence.
