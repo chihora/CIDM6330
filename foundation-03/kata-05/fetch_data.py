@@ -2,6 +2,7 @@ import json
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.request import urlopen
+from pathlib import Path
 
 lock = threading.Lock()
 
@@ -10,15 +11,16 @@ def fetch_url(url, timeout):
     try:
         with urlopen(url, timeout=timeout) as response:
             data = response.read().decode("utf-8")
-            return {"url": url, "data": data}
+            parsed_data = json.loads(data)
+            return {"url": url, "data": parsed_data}
     except Exception as e:
-        return {"url": url, "error": str(e)}
+        return {"url": url, "error": f"{type(e).__name__}: {e}"}
 
 
 def main():
     config_path = Path(__file__).with_name("config.json")
-with config_path.open("r", encoding="utf-8") as f:
-    config = json.load(f)
+    with config_path.open("r", encoding="utf-8") as f:
+        config = json.load(f)
 
     urls = config["urls"]
     thread_pool_size = config["thread_pool_size"]
