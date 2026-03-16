@@ -5,6 +5,7 @@ from urllib.request import urlopen
 
 lock = threading.Lock()
 
+
 def fetch_url(url, timeout):
     try:
         with urlopen(url, timeout=timeout) as response:
@@ -13,8 +14,9 @@ def fetch_url(url, timeout):
     except Exception as e:
         return {"url": url, "error": str(e)}
 
+
 def main():
-    with open("config.json") as f:
+    with open("config.json", "r", encoding="utf-8") as f:
         config = json.load(f)
 
     urls = config["urls"]
@@ -36,16 +38,19 @@ def main():
                 else:
                     results.append(result)
 
-    with open(config["output_file"], "w") as f:
+    with open(config["output_file"], "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
 
-    with open(config["error_log_file"], "w") as f:
+    with open(config["error_log_file"], "w", encoding="utf-8") as f:
         for error in errors:
             f.write(str(error) + "\n")
 
-    print("Fetching complete.")
-    print("Results saved to results.json")
-    print("Errors saved to errors.log")
+    print(f"Completed fetching {len(urls)} URL(s).")
+    print(f"Successful fetches: {len(results)}")
+    print(f"Failed fetches: {len(errors)}")
+    print(f"Results written to: {config['output_file']}")
+    print(f"Errors written to: {config['error_log_file']}")
+
 
 if __name__ == "__main__":
     main()
