@@ -1,0 +1,9 @@
+{
+  "dataset_size": 200000,
+  "chunk_size": 10000,
+  "max_workers": 4,
+  "simulate_worker_failures": true,
+  "fail_chunk_indices": [3, 11],
+  "output_file": "results.json",
+  "error_log_file": "errors.log"
+}
