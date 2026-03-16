@@ -1,4 +1,6 @@
 results.json
 errors.log
+results_async.json
+errors_async.log
 *.db
 tmpclaude*
