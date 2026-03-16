@@ -68,6 +68,39 @@ Reset bisect after completion:
 git bisect reset
 ```
 
+### Bisect Evidence from This Assignment
+
+Validation command used while bisecting:
+
+```bash
+python check_kata6_output.py
+```
+
+Known-good commit:
+- `2b90245` - `feat: add kata 6 multiprocessing chunk processor with progress and failure handling`
+
+Known-bad commit (intentional bug):
+- `d408b57` - `test: intentionally introduce kata6 aggregation bug for bisect exercise`
+
+Commands executed:
+
+```bash
+git bisect start
+git bisect bad d408b57
+git bisect good 2b90245
+git bisect log
+git bisect reset
+```
+
+Bisect result:
+- First bad commit identified: `d408b57a005a53539d124d3e66e1eb6a2733fcd8`
+
+Bug introduced:
+- In `combine_results`, `total_count` was incorrectly changed to `len(chunk_results)` instead of summing each chunk's item count.
+
+Fix commit:
+- `cc21e1e` - `fix: restore correct kata6 total_count aggregation`
+
 ## Stretch (Optional): Shared State with Manager
 
 This implementation uses `multiprocessing.Manager` to maintain shared progress counters (`completed`, `failed`) while worker futures finish.
