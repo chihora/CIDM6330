@@ -16,8 +16,9 @@ def fetch_url(url, timeout):
 
 
 def main():
-    with open("config.json", "r", encoding="utf-8") as f:
-        config = json.load(f)
+    config_path = Path(__file__).with_name("config.json")
+with config_path.open("r", encoding="utf-8") as f:
+    config = json.load(f)
 
     urls = config["urls"]
     thread_pool_size = config["thread_pool_size"]
