@@ -62,7 +62,7 @@ def process_chunk(chunk_index, values, fail_chunk_indices):
 
 
 def combine_results(chunk_results):
-    total_count = len(chunk_results)
+    total_count = sum(item["count"] for item in chunk_results)
     total_sum = sum(item["sum"] for item in chunk_results)
     weighted_variance_sum = sum(item["variance"] * item["count"] for item in chunk_results)
 
