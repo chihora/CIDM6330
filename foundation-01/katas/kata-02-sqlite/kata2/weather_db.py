@@ -3,7 +3,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Optional, Sequence, Tuple, List, Dict, Any
+from typing import Optional, Sequence, Tuple, List, Dict, Any
 
 
 @dataclass(frozen=True)
