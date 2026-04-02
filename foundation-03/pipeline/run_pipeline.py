@@ -11,6 +11,7 @@ from .config import (
     USE_LIVE_FRED,
 )
 from .logging_config import get_logger
+from .reporting import build_run_summary
 from .transform import save_transformed_data, transform_observations
 
 
@@ -35,18 +36,15 @@ def run_pipeline(use_live=None):
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = REPORT_DIR / "pipeline_run_summary.md"
     report_path.write_text(
-        "\n".join(
-            [
-                "# Pipeline Run Summary",
-                f"- Live mode: {live_mode}",
-                f"- Series: {FRED_SERIES_ID}",
-                f"- Observation start: {FRED_OBSERVATION_START or 'default'}",
-                f"- Observation end: {FRED_OBSERVATION_END or 'default'}",
-                f"- Raw observations: {len(raw_payload.get('observations', []))}",
-                f"- Transformed records: {len(transformed)}",
-                f"- Raw file: {RAW_FILE}",
-                f"- Transformed file: {TRANSFORMED_FILE}",
-            ]
+        build_run_summary(
+            live_mode=live_mode,
+            series_id=FRED_SERIES_ID,
+            observation_start=FRED_OBSERVATION_START,
+            observation_end=FRED_OBSERVATION_END,
+            raw_payload=raw_payload,
+            transformed_rows=transformed,
+            raw_file=RAW_FILE,
+            transformed_file=TRANSFORMED_FILE,
         ),
         encoding="utf-8",
     )
@@ -55,8 +53,10 @@ def run_pipeline(use_live=None):
     return {
         "raw_count": len(raw_payload.get("observations", [])),
         "transformed_count": len(transformed),
+        "flagged_count": len([row for row in transformed if row.get("signal_flag")]),
         "raw_file": str(RAW_FILE),
         "transformed_file": str(TRANSFORMED_FILE),
+        "report_file": str(report_path),
     }
 
 

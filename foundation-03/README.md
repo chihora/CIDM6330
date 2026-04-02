@@ -1,39 +1,37 @@
-# Foundation 3 - GDP/FRED Pipeline
+# Foundation 3/4 - GDP FRED Pipeline MVP
 
-This folder contains the Foundation 3 sprint deliverables for a GDP/FRED-style data pipeline. The project is intentionally built as a small modular pipeline rather than a distributed system because the current assignment scope values runnable software, iteration evidence, and architectural reflection over infrastructure complexity.
+This folder contains the runnable GDP/FRED pipeline that serves as the delivered MVP for Foundation 4. The system is a modular monolith organized as a pipeline: acquire data, transform it into analytical indicators, and produce inspectable output artifacts.
 
-## Current scope
+## Problem Alignment
 
-The current MVP pipeline does three things:
-- acquires GDP-style observation data from a sample payload or the live FRED API
-- transforms raw observations into cleaned date/value records
-- runs an end-to-end pipeline that saves raw data, transformed data, and a short run summary
+The project addresses the Foundation 2 problem statement of monitoring U.S. economic growth with reproducible GDP trend analysis. The pipeline focuses on FRED Real GDP (`GDPC1`) and produces derived indicators that help identify potential downturn signals.
 
-## What is working
+## What the MVP Does
 
-- `pipeline.acquire.fetch_gdp_observations()` returns a sample GDP payload by default and can call the live FRED observations endpoint when `FRED_API_KEY` is present.
-- Live acquisition supports configurable timeout, retry, backoff, and fallback-to-sample behavior.
-- `pipeline.transform.transform_observations()` cleans invalid rows and converts numeric strings to floats.
-- `pipeline.run_pipeline.run_pipeline()` chains acquisition and transformation and writes artifacts to `data/raw`, `data/transformed`, and `output/reports`.
-- Pipeline runs now include series/date-range configuration context in the summary report.
-- Basic tests pass for acquisition, transformation, and pipeline integration.
+- Acquires GDP observations from a built-in sample payload by default
+- Optionally calls the live FRED observations endpoint when `USE_LIVE_FRED=true` and a valid `FRED_API_KEY` is available
+- Cleans invalid rows, enforces chronological ordering, and removes duplicate dates
+- Computes:
+  - `gdp_level`
+  - `qoq_pct_change`
+  - `yoy_pct_change`
+  - `rolling_4q_change`
+  - `signal_flag`
+  - `signal_reasons`
+- Writes raw JSON, transformed JSON, and a markdown run summary
 
-## What is not yet working
-
-- There is no advanced retry strategy (jitter/circuit breaker) for live API requests.
-- Configuration is environment-variable based and not yet exposed through a dedicated CLI.
-- Output is written to JSON files rather than a database.
-- Logging is basic stage-level observability rather than structured operational logging.
-
-## Run
+## Run the MVP
 
 From `foundation-03`:
 
-```bash
+```powershell
 python -m pipeline.run_pipeline
 ```
 
-If you want to use live FRED acquisition, set `.env` values based on `.env.example`:
+## Optional Live FRED Mode
+
+Set these environment variables before running:
+
 - `USE_LIVE_FRED`
 - `FRED_API_KEY`
 - `FRED_SERIES_ID`
@@ -44,34 +42,49 @@ If you want to use live FRED acquisition, set `.env` values based on `.env.examp
 - `FRED_RETRY_BACKOFF_SECONDS`
 - `FRED_FALLBACK_TO_SAMPLE_ON_ERROR`
 
-## Test
+Example:
 
-```bash
+```powershell
+$env:USE_LIVE_FRED="true"
+$env:FRED_API_KEY="your_key_here"
+$env:FRED_SERIES_ID="GDPC1"
+python -m pipeline.run_pipeline
+```
+
+## Test the MVP
+
+```powershell
 python -m unittest discover -s pipeline/tests -p "test_*.py"
 ```
 
-## Key outputs
+The suite includes both unit and integration tests. Detailed coverage notes are documented in [foundation-04/TESTING.md](../foundation-04/TESTING.md).
+
+## Key Outputs
 
 - `data/raw/gdp_raw.json`
 - `data/transformed/gdp_transformed.json`
 - `output/reports/pipeline_run_summary.md`
 
-## Deliverable map
+## Deployment / Execution Notes
 
-- Iteration 1: `docs/F3_ITERATION_1.md`
-- Iteration 2: `docs/F3_ITERATION_2.md`
-- Iteration 3: `docs/F3_ITERATION_3.md`
-- Architecture reality check: `docs/F3_ARCHITECTURE_REALITY_CHECK.md`
-- Distributed considerations: `docs/F3_DISTRIBUTED_CONSIDERATIONS.md`
-- Risk identification: `docs/F3_RISK_IDENTIFICATION.md`
-- AI process documentation: `AI_LOG.md`
+- The MVP runs locally with the Python standard library and does not require third-party packages.
+- Sample mode is the default so the system remains runnable even without internet access.
+- Live mode depends on external connectivity and a valid FRED API key.
 
-## Structure
+## Demonstration Support
 
-- `pipeline/`: runnable acquisition, transformation, configuration, logging, and orchestration code
-- `pipeline/tests/`: basic tests for working code
-- `docs/`: sprint deliverables and ADRs
-- `data/raw/`: raw acquisition artifacts
-- `data/transformed/`: transformed pipeline artifacts
-- `output/reports/`: run summaries and report outputs
-- `AI_LOG.md`: documented AI collaboration process
+Foundation 4 documentation for demonstration and defense lives in [foundation-04](../foundation-04/README.md), including:
+
+- demo script
+- testing documentation
+- ADRs
+- architecture diagram
+- reflection
+- PR summary draft
+
+## Current Limitations
+
+- No CI workflow is configured yet
+- Live API behavior is not covered by end-to-end automated tests
+- Storage remains file-based rather than database-backed
+- Observability is lightweight and focused on course-MVP needs

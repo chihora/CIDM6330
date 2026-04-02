@@ -30,7 +30,7 @@ RAW_FILE = RAW_DIR / "gdp_raw.json"
 TRANSFORMED_FILE = TRANSFORMED_DIR / "gdp_transformed.json"
 
 FRED_API_KEY = os.getenv("FRED_API_KEY", "")
-FRED_SERIES_ID = os.getenv("FRED_SERIES_ID", "GDP")
+FRED_SERIES_ID = os.getenv("FRED_SERIES_ID", "GDPC1")
 FRED_BASE_URL = "https://api.stlouisfed.org/fred/series/observations"
 FRED_OBSERVATION_START = os.getenv("FRED_OBSERVATION_START", "")
 FRED_OBSERVATION_END = os.getenv("FRED_OBSERVATION_END", "")
